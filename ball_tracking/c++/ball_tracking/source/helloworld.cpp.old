@@ -1,0 +1,144 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <time.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <iostream>
+
+class Camera{
+	private:
+		void* camera_base;
+		void* lwSdram_base;
+		void* lwCameraIp_base;
+		int fd;
+		volatile unsigned short int *camera_addr;
+		volatile unsigned short int *lwSdram_addr;
+		volatile unsigned short int *lwCameraIp_addr;
+	public:
+		cv::Mat camera_mt;
+		Camera(){
+			camera_mt = cv::Mat(480,640,CV_8UC3);
+			if((fd = open("/dev/mem",(O_RDWR | O_SYNC))) == -1){
+				printf("ERROR: could not open \"/dev/mem\"...\n");
+				return;
+			}
+			lwSdram_base = mmap(NULL,0x10000,(PROT_READ | PROT_WRITE),MAP_SHARED,fd,0xFFC20000);
+			lwCameraIp_base = mmap(NULL,0x10000,(PROT_READ | PROT_WRITE),MAP_SHARED,fd,0xFF201000);
+			camera_base = mmap(NULL,0x200000,(PROT_READ | PROT_WRITE),MAP_SHARED,fd,0x20000000);
+			if(camera_base == MAP_FAILED){
+				printf("ERROR: mmap() failed...\n");
+				close(fd);
+				return;
+			}
+			camera_addr = (volatile unsigned short int*)camera_base;
+			lwCameraIp_addr = (volatile unsigned short int*)(lwCameraIp_base+1281*2);
+			lwSdram_addr = (volatile unsigned short int*)(lwSdram_base+0x5080);
+
+			*lwSdram_addr = 0xffff;
+		}
+		void shutterRelease(){
+			*lwCameraIp_addr = 0x0001;
+		}
+		bool shutterWait(){
+			//while((*(lwCameraIp_addr+1))&0x0400 == 0x0400);
+			while((*(lwCameraIp_addr))&0x0001 == 0x0001);
+			return true;
+		}
+		cv::Mat getImg(){
+			unsigned int camera_data;
+			for(int y = 0;y < camera_mt.rows;++y){
+				for(int x = 0;x < camera_mt.cols;++x){
+					camera_data = *(camera_addr + (x + y * 640));
+					camera_mt.data[y * camera_mt.step + x * camera_mt.elemSize() + 0]
+						= ((camera_data & 0x1f00) >> 5) & 0xf8;
+					camera_mt.data[y * camera_mt.step + x * camera_mt.elemSize() + 1]
+						= ((camera_data & 0xe000) >> 11) | ((camera_data & 0x0007) << 5);
+					camera_mt.data[y * camera_mt.step + x * camera_mt.elemSize() + 2]
+						= (camera_data & 0x00f8);
+				}
+			}
+			return camera_mt;
+		}
+};
+
+int main(int argc,char **argv)
+{
+	void* camera_base;
+	void* lwSdram_base;
+	void* lwCameraIp_base;
+	int fd;
+	volatile unsigned short int *camera_addr;
+	volatile unsigned short int *lwSdram_addr;
+	volatile unsigned short int *lwCameraIp_addr;
+
+
+	if((fd = open("/dev/mem",(O_RDWR | O_SYNC))) == -1){
+		printf("ERROR: could not open \"/dev/mem\"...\n");
+		return 1;
+	}
+	lwSdram_base = mmap(NULL,0x10000,(PROT_READ | PROT_WRITE),MAP_SHARED,fd,0xFFC20000);
+	lwCameraIp_base = mmap(NULL,0x10000,(PROT_READ | PROT_WRITE),MAP_SHARED,fd,0xFF201000);
+	camera_base = mmap(NULL,0x200000,(PROT_READ | PROT_WRITE),MAP_SHARED,fd,0x20000000);
+	if(camera_base == MAP_FAILED){
+		printf("ERROR: mmap() failed...\n");
+		close(fd);
+		return 1;
+	}
+	camera_addr = (volatile unsigned short int*)camera_base;
+	lwCameraIp_addr = (volatile unsigned short int*)(lwCameraIp_base+1281*2);
+	lwSdram_addr = (volatile unsigned short int*)(lwSdram_base+0x5080);
+
+	*lwSdram_addr = 0xffff;
+	*lwCameraIp_addr = 0x0001;
+	while((*(lwCameraIp_addr+1))&0x0400 == 0x0400){
+		printf("f = %d\n",*(lwCameraIp_addr+1));
+	}
+
+	cv::Mat camera_mt(480,640,CV_8UC3);
+	unsigned int camera_data;
+	Camera camera;
+	while(1){
+		clock_t start = clock();
+		//while((*(lwCameraIp_addr+1))&0x0400 == 0x0400);
+		/*
+		while((*(lwCameraIp_addr))&0x0001 == 0x0001);
+		for(int y = 0;y < camera_mt.rows;++y){
+			for(int x = 0;x < camera_mt.cols;++x){
+				camera_data = *(camera_addr + (x + y * 640));
+				camera_mt.data[y * camera_mt.step + x * camera_mt.elemSize() + 0]
+					= ((camera_data & 0x1f00) >> 5) & 0xf8;
+				camera_mt.data[y * camera_mt.step + x * camera_mt.elemSize() + 1]
+					= ((camera_data & 0xe000) >> 11) | ((camera_data & 0x0007) << 5);
+				camera_mt.data[y * camera_mt.step + x * camera_mt.elemSize() + 2]
+					= (camera_data & 0x00f8);
+			}
+		}
+		*lwCameraIp_addr = 0x0001;
+		cv::imshow("test",camera_mt);
+		*/
+		camera.shutterWait();
+		camera_mt = camera.getImg();
+		cv::imshow("test",camera_mt);
+		camera.shutterRelease();
+		char k = cv::waitKey(1);
+		if(k == 27){
+			break;
+		}
+		printf("time = %6fms\n",(double)(clock() - start) / CLOCKS_PER_SEC*1000);
+	}
+	munmap(lwSdram_base,0x10000);
+	munmap(lwCameraIp_base,0x10000);
+	if(munmap(camera_base,0x20000) != 0){
+		printf("ERROR: mumap() failed...\n");
+		close(fd);
+		return 1;
+	}
+	close(fd);
+	return 0;
+}
+
