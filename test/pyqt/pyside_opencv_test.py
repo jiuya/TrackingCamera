@@ -40,7 +40,8 @@ class DesignerMainWindow(QtGui.QMainWindow,Ui_Qt_CV_MainWindow):
     	    #opencv_testファイルからクラスの読み込み
     	    cv_test = opencv_test()
     	    #ファイルを読み込んでRとBを交換
-    	    pic,pic2 = cv_test.open_pic(unicode(self.file))
+    	    #pic,pic2 = cv_test.open_pic(unicode(self.file))
+    	    pic,pic2 = cv_test.camera()
     	    #エッジ検出
     	    self.cv_img = cv_test.canny(pic2)
     	    #画像の高さ、幅を読み込み

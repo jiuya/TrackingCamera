@@ -6,6 +6,7 @@ class opencv_test:
 	# 初期化
 	def __init__(self,parent = None):
 		self.file = file
+		self.cap = cv2.VideoCapture(0)
 	#ファイルを読み込み、BGRをRGBに変換する関数
 	def open_pic(self,file):
 		pic = cv2.imread(file)
@@ -20,7 +21,10 @@ class opencv_test:
 			edges2[:,:,i] = edges
 		add = cv2.addWeighted(pic,1,edges2,0.4,0)
 		return add
-
+	def camera(self):
+		ret, frame = self.cap.read()
+		cap_color = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+		return frame,cap_color
 if __name__ == '__main__':
 	#以下はファイル単独でのテスト用コード
 	file = "lena.jpg"
