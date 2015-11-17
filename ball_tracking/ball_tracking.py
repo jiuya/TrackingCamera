@@ -20,9 +20,12 @@ class DesignerMainWindow(QtGui.QMainWindow,Ui_Qt_CV_MainWindow):
         self.testCv.setDaemon(True)
         self.testCv.start()
     	#executeボタンクリック時にexe_canny関数を実行
-    	#QtCore.QObject.connect(self.exec_button,QtCore.SIGNAL("clicked()"),self.exe_canny)
-
-
+    	QtCore.QObject.connect(self.exec_button,QtCore.SIGNAL("clicked()"),self.exe_canny)
+    def exe_canny(self):
+        if self.testCv.beta < 1:
+            self.testCv.beta += 0.1
+        else:
+            self.testCv.beta = 0
 
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
