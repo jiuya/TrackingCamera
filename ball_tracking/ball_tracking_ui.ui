@@ -55,9 +55,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
+      <y>20</y>
       <width>501</width>
-      <height>89</height>
+      <height>122</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -68,18 +68,32 @@
       <number>0</number>
      </property>
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;HSV&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="sizeConstraint">
         <enum>QLayout::SetMinimumSize</enum>
        </property>
        <item>
-        <widget class="QLCDNumber" name="size_lcd"/>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;H&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="size_edit"/>
+        <widget class="QLCDNumber" name="H_lcd"/>
        </item>
        <item>
-        <widget class="QSlider" name="size_slider">
+        <widget class="QLineEdit" name="H_edit"/>
+       </item>
+       <item>
+        <widget class="QSlider" name="H_slider">
          <property name="maximum">
           <number>260000</number>
          </property>
@@ -93,13 +107,20 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLCDNumber" name="threshold1_lcd"/>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;S&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="threshold1_edit"/>
+        <widget class="QLCDNumber" name="S_lcd"/>
        </item>
        <item>
-        <widget class="QSlider" name="threshold1_slider">
+        <widget class="QLineEdit" name="S_edit"/>
+       </item>
+       <item>
+        <widget class="QSlider" name="S_slider">
          <property name="maximum">
           <number>254</number>
          </property>
@@ -113,13 +134,20 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QLCDNumber" name="threshold2_lcd"/>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;V&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="threshold2_edit"/>
+        <widget class="QLCDNumber" name="V_lcd"/>
        </item>
        <item>
-        <widget class="QSlider" name="threshold2_slider">
+        <widget class="QLineEdit" name="V_edit"/>
+       </item>
+       <item>
+        <widget class="QSlider" name="V_slider">
          <property name="maximum">
           <number>254</number>
          </property>
@@ -132,35 +160,13 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_5">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>591</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <widget class="QLineEdit" name="file_edit"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="file_button">
-       <property name="text">
-        <string>File</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
       <x>530</x>
-      <y>70</y>
+      <y>20</y>
       <width>91</width>
-      <height>101</height>
+      <height>121</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -186,21 +192,12 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="cancel_button">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
+   <zorder>pic_View</zorder>
+   <zorder>verticalLayoutWidget</zorder>
+   <zorder>verticalLayoutWidget_2</zorder>
+   <zorder></zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -245,41 +242,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>threshold1_slider</sender>
+   <sender>H_slider</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>threshold1_lcd</receiver>
-   <slot>display(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>413</x>
-     <y>508</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>53</x>
-     <y>508</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>threshold2_slider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>threshold2_lcd</receiver>
-   <slot>display(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>413</x>
-     <y>539</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>53</x>
-     <y>539</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>size_slider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>size_lcd</receiver>
+   <receiver>H_lcd</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -293,25 +258,41 @@
    </hints>
   </connection>
   <connection>
-   <sender>threshold1_edit</sender>
+   <sender>H_edit</sender>
    <signal>textChanged(QString)</signal>
-   <receiver>threshold1_lcd</receiver>
+   <receiver>H_lcd</receiver>
    <slot>display(QString)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>197</x>
-     <y>507</y>
+     <y>476</y>
     </hint>
     <hint type="destinationlabel">
      <x>53</x>
-     <y>508</y>
+     <y>477</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>threshold2_edit</sender>
+   <sender>V_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>V_lcd</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>413</x>
+     <y>539</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>53</x>
+     <y>539</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>V_edit</sender>
    <signal>textChanged(QString)</signal>
-   <receiver>threshold2_lcd</receiver>
+   <receiver>V_lcd</receiver>
    <slot>display(QString)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -325,18 +306,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>size_edit</sender>
+   <sender>S_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>S_lcd</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>413</x>
+     <y>508</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>53</x>
+     <y>508</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>S_edit</sender>
    <signal>textChanged(QString)</signal>
-   <receiver>size_lcd</receiver>
+   <receiver>S_lcd</receiver>
    <slot>display(QString)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>197</x>
-     <y>476</y>
+     <y>507</y>
     </hint>
     <hint type="destinationlabel">
      <x>53</x>
-     <y>477</y>
+     <y>508</y>
     </hint>
    </hints>
   </connection>
