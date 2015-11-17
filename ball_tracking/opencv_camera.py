@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import cv2
+import threading
 
-class opencv_test:
+class opencv_test(threading.Thread):
 	# 初期化
 	def __init__(self,parent = None):
+		threading.Thread.__init__(self)
 		self.file = file
 		self.cap = cv2.VideoCapture(0)
-	#ファイルを読み込み、BGRをRGBに変換する関数
-	def open_pic(self,file):
-		pic = cv2.imread(file)
-		pic_color = cv2.cvtColor(pic,cv2.COLOR_BGR2RGB)
-		return pic,pic_color
 	#Canny処理してエッジ検出した後に、元の画像と重ねる関数
 	def canny(self,pic):
 		img =cv2.cvtColor(pic,cv2.COLOR_BGR2GRAY)
@@ -21,16 +18,18 @@ class opencv_test:
 			edges2[:,:,i] = edges
 		add = cv2.addWeighted(pic,1,edges2,0.4,0)
 		return add
-	def camera(self):
-		ret, frame = self.cap.read()
-		cap_color = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-		return frame,cap_color
+
+	def run(self):
+		while True:
+			ret, frame = self.cap.read()
+			add = self.canny(frame)
+			cv2.imshow('camera capture', add)
+			k = cv2.waitKey(1)
+			if k == 27:
+				break
+		self.cap.release()
+
 if __name__ == '__main__':
 	#以下はファイル単独でのテスト用コード
-	file = "lena.jpg"
 	a = opencv_test()
-	b,c = a.open_pic(file)
-	d = a.canny(b)
-	cv2.imshow("",d)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+	a.run()

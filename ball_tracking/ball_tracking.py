@@ -5,36 +5,24 @@ import numpy as np
 import sys
 from PyQt4 import QtCore,QtGui
 import os
+import threading
 from ball_tracking_ui import Ui_Qt_CV_MainWindow
-from opencv_camera import opencv_camera
+#from opencv_camera import opencv_camera
+from opencv_camera import opencv_test
+
 
 class DesignerMainWindow(QtGui.QMainWindow,Ui_Qt_CV_MainWindow):
     def __init__(self, parent = None):
         super(DesignerMainWindow, self).__init__(parent)
         self.ui = Ui_Qt_CV_MainWindow()
     	self.setupUi(self)
+        self.testCv = opencv_test()
+        self.testCv.setDaemon(True)
+        self.testCv.start()
     	#executeボタンクリック時にexe_canny関数を実行
-    	QtCore.QObject.connect(self.exec_button,QtCore.SIGNAL("clicked()"),self.exe_canny)
+    	#QtCore.QObject.connect(self.exec_button,QtCore.SIGNAL("clicked()"),self.exe_canny)
 
-    #exe_canny関数：opecvのcanny処理画像をQtのQPixmapに変換し描画
-    def exe_canny(self):
-	    #opencv_testファイルからクラスの読み込み
-	    cv_test = opencv_test()
-	    #ファイルを読み込んでRとBを交換
-	    #pic,pic2 = cv_test.open_pic(unicode(self.file))
-	    pic,pic2 = cv_test.camera()
-	    #エッジ検出
-	    self.cv_img = cv_test.canny(pic2)
-	    #画像の高さ、幅を読み込み
-	    height, width, dim = self.cv_img.shape
-	    #全ピクセル数
-	    bytesPerLine = dim * width
-	    #Opencv（numpy）画像をQtのQImageに変換
-	    self.image = QtGui.QImage(self.cv_img.data, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-	    #QImageをQPixmapに変換し、アイテムとして読み込む
-	    pic_Item = QtGui.QGraphicsPixmapItem(QtGui.QPixmap.fromImage(self.image))
-	    #画像を描画
-	    self.scene.addItem(pic_Item)
+
 
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
