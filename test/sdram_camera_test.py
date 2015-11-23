@@ -14,6 +14,7 @@ class Camera:
                 mmap.MAP_SHARED,mmap.PROT_READ | mmap.PROT_WRITE,
                 offset=Camera.hwRegsBase)
         self.h2pLwCameraAddr.seek(0x100000,os.SEEK_SET)
+        self.img = np.zeros( (480,640,3) )
     def __del__(self):
         self.h2pLwCameraAddr.close()
         os.close(self.fd)
@@ -23,7 +24,16 @@ class Camera:
         self.h2pLwCameraAddr.seek(0x100000+pos,os.SEEK_SET)
     def readData(self):
         return self.h2pLwCameraAddr.read_byte()
-
+    def read(self):
+        self.posReset(0)
+        for h in xrange(480):
+            for w in xrange(640):
+                ldata = ord(self.readData())
+                hdata = ord(self.readData())
+                self.img[h,w,0] = (ldata << 3) & 0xff
+                self.img[h,w,1] = (ldata >> 5) & 0x7 + (hdata << 3) & 0x38
+                self.img[h,w,2] = (hdata & 0xf8)
+        return self.img
 if __name__ == '__main__':
     camera = Camera()
     """
@@ -37,19 +47,10 @@ if __name__ == '__main__':
     """
     # h*w*bgr
     freq = 1000/cv2.getTickFrequency()
-    img = np.zeros( (480,640,3) )
 
     while True :
         start_time = cv2.getTickCount()
-        camera.posReset(0)
-        for h in xrange(480):
-            for w in xrange(640):
-                camera.posReset(0)
-                ldata = ord(camera.readData())
-                hdata = ord(camera.readData())
-                img[h,w,0] = (ldata << 3) & 0xff
-                img[h,w,1] = (ldata >> 5) & 0x7 + (hdata << 3) & 0x38
-                img[h,w,2] = (hdata & 0xf8)
+        img = camera.read()
         diff_time = (cv2.getTickCount() - start_time)*freq
         print "get time : %fms" % diff_time
         cv2.imshow('camera capture', img)
