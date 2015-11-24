@@ -53,7 +53,7 @@ class Ui_Qt_CV_MainWindow(object):
 		self.H_edit.setObjectName(_fromUtf8("H_edit"))
 		self.horizontalLayout_2.addWidget(self.H_edit)
 		self.H_slider = QtGui.QSlider(self.verticalLayoutWidget)
-		self.H_slider.setMaximum(127)
+		self.H_slider.setMaximum(180)
 		self.H_slider.setOrientation(QtCore.Qt.Horizontal)
 		self.H_slider.setObjectName(_fromUtf8("H_slider"))
 		self.horizontalLayout_2.addWidget(self.H_slider)
