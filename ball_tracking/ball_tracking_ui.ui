@@ -24,9 +24,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
+      <y>90</y>
       <width>501</width>
-      <height>122</height>
+      <height>141</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -64,7 +64,7 @@
        <item>
         <widget class="QSlider" name="H_slider">
          <property name="maximum">
-          <number>260000</number>
+          <number>127</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -91,7 +91,7 @@
        <item>
         <widget class="QSlider" name="S_slider">
          <property name="maximum">
-          <number>254</number>
+          <number>61</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

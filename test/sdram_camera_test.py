@@ -15,6 +15,8 @@ class Camera:
                 offset=Camera.hwRegsBase)
         self.h2pLwCameraAddr.seek(0x100000,os.SEEK_SET)
         self.img = np.zeros( (480,640,3) )
+        self.w_range = range(0,640)
+        self.h_range = range(0,480)
     def __del__(self):
         self.h2pLwCameraAddr.close()
         os.close(self.fd)
@@ -26,8 +28,8 @@ class Camera:
         return self.h2pLwCameraAddr.read_byte()
     def read(self):
         self.posReset(0)
-        for h in xrange(480):
-            for w in xrange(640):
+        for h in self.h_range:
+            for w in self.w_range:
                 ldata = ord(self.readData())
                 hdata = ord(self.readData())
                 self.img[h,w,0] = (ldata << 3) & 0xff
