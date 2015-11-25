@@ -23,6 +23,7 @@ class DesignerMainWindow(QtGui.QMainWindow,Ui_Qt_CV_MainWindow):
     	QtCore.QObject.connect(self.exec_button,QtCore.SIGNAL("clicked()"),self.exe_canny)
         QtCore.QObject.connect(self.H_slider, QtCore.SIGNAL("valueChanged(int)"), self.H_slider_changed)
         QtCore.QObject.connect(self.S_slider, QtCore.SIGNAL("valueChanged(int)"), self.S_slider_changed)
+        QtCore.QObject.connect(self.V_slider, QtCore.SIGNAL("valueChanged(int)"), self.V_slider_changed)
     def exe_canny(self):
         if self.testCv.beta < 1:
             self.testCv.beta += 0.1
@@ -30,8 +31,11 @@ class DesignerMainWindow(QtGui.QMainWindow,Ui_Qt_CV_MainWindow):
             self.testCv.beta = 0
     def H_slider_changed(self,value):
         self.testCv.hue_value = value
-    def S_slider_changed(self,huerange):
-        self.testCv.hue_range = huerange
+    def S_slider_changed(self,value):
+        self.testCv.s_max = value
+    def V_slider_changed(self,value):
+        self.testCv.v_max = value
+
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	dmw = DesignerMainWindow()

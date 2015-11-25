@@ -159,4 +159,3 @@ if __name__ == "__main__":
 	ui.setupUi(Qt_CV_MainWindow)
 	Qt_CV_MainWindow.show()
 	sys.exit(app.exec_())
-
