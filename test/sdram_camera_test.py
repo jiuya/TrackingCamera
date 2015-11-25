@@ -14,7 +14,7 @@ class Camera:
                 mmap.MAP_SHARED,mmap.PROT_READ | mmap.PROT_WRITE,
                 offset=Camera.hwRegsBase)
         self.h2pLwCameraAddr.seek(0x100000,os.SEEK_SET)
-        self.img = np.zeros( (480,640,3) )
+        self.img = np.zeros( (480,640,3),np.uint8 )
         self.w_range = range(0,640)
         self.h_range = range(0,480)
     def __del__(self):
@@ -25,28 +25,20 @@ class Camera:
     def posReset(self,pos):
         self.h2pLwCameraAddr.seek(0x100000+pos,os.SEEK_SET)
     def readData(self):
-        return self.h2pLwCameraAddr.read_byte()
+        return ord(self.h2pLwCameraAddr.read_byte())
     def read(self):
         self.posReset(0)
         for h in self.h_range:
             for w in self.w_range:
-                ldata = ord(self.readData())
-                hdata = ord(self.readData())
-                self.img[h,w,0] = (ldata << 3) & 0xff
-                self.img[h,w,1] = (ldata >> 5) & 0x7 + (hdata << 3) & 0x38
+                hdata = self.readData()
+                ldata = self.readData()
+                self.img[h,w,0] = (ldata << 3) & 0xf8
+                self.img[h,w,1] = ((ldata >> 3) & 0x1c) | ((hdata << 5) & 0xe0)
                 self.img[h,w,2] = (hdata & 0xf8)
         return self.img
 if __name__ == '__main__':
     camera = Camera()
-    """
-    camera.posReset(0)
-    for h in range(0,20):
-        for w in range(0,640):
-            #for w in range(0,640):
-            camera.writeData(0)
-            camera.writeData(0)
-    time.sleep(2)
-    """
+
     # h*w*bgr
     freq = 1000/cv2.getTickFrequency()
 
@@ -63,8 +55,8 @@ if __name__ == '__main__':
         if k == ord("w"):
             for h in xrange(20):
                 for w in xrange(640):
-                    print "r%x " % img[h,w,0] ,
+                    print "b%x " % img[h,w,0] ,
                     print "g%x " % img[h,w,1] ,
-                    print "b%x " % img[h,w,2] ,
+                    print "r%x " % img[h,w,2] ,
                 print ""
     cv2.destroyAllWindows()
