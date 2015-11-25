@@ -7,13 +7,18 @@ import cv2
 
 class Camera:
     hwRegsSpan = 0x200000
-    hwRegsBase = 0xff200000
+    hwRegsBase = 0xFFC20000
+    hwF2SBase = 0x20000000
+    hwF2SSpan = 0x200000
     def __init__(self):
         self.fd = os.open("/dev/mem",os.O_RDWR | os.O_SYNC)
         self.h2pLwCameraAddr = mmap.mmap(self.fd, Camera.hwRegsSpan,
                 mmap.MAP_SHARED,mmap.PROT_READ | mmap.PROT_WRITE,
                 offset=Camera.hwRegsBase)
-        self.h2pLwCameraAddr.seek(0x100000,os.SEEK_SET)
+        self.f2sAddr = mmap.mmap(self.fd, Camera.hwF2SSpan,
+                mmap.MAP_SHARED,mmap.PROT_READ | mmap.PROT_WRITE,
+                offset=Camera.hwF2SBase)
+        self.h2pLwCameraAddr.seek(0x0,os.SEEK_SET)
         self.img = np.zeros( (480,640,3),np.uint8 )
         self.w_range = range(0,640)
         self.h_range = range(0,480)
@@ -23,7 +28,7 @@ class Camera:
     def writeData(self,wordData):
         self.h2pLwCameraAddr.write_byte(chr(wordData))
     def posReset(self,pos):
-        self.h2pLwCameraAddr.seek(0x100000+pos,os.SEEK_SET)
+        self.h2pLwCameraAddr.seek(0x0+pos,os.SEEK_SET)
     def readData(self):
         return ord(self.h2pLwCameraAddr.read_byte())
     def read(self):
@@ -38,25 +43,10 @@ class Camera:
         return self.img
 if __name__ == '__main__':
     camera = Camera()
-
-    # h*w*bgr
-    freq = 1000/cv2.getTickFrequency()
-
-    while True :
-        start_time = cv2.getTickCount()
-        img = camera.read()
-        diff_time = (cv2.getTickCount() - start_time)*freq
-        print "get time : %fms" % diff_time
-        cv2.imshow('camera capture', img)
-
-        k = cv2.waitKey(0)
-        if k == 27:
-            break
-        if k == ord("w"):
-            for h in xrange(20):
-                for w in xrange(640):
-                    print "b%x " % img[h,w,0] ,
-                    print "g%x " % img[h,w,1] ,
-                    print "r%x " % img[h,w,2] ,
-                print ""
-    cv2.destroyAllWindows()
+    camera.posReset(0x5080)
+    for i in range(0,4):
+        print "0x%02x" % camera.readData()
+    exit()
+    camera.f2sAddr.seek(0,os.SEEK_SET)
+    for i in range(0,20):
+        print "0x%02x" % ord(camera.f2sAddr.read_byte())
