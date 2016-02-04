@@ -398,7 +398,7 @@ int main(int argc,char **argv)
 		}
 			//if(camera.lbuttoon_flag == 0){
 
-		//cv::imshow("camera_trans",camera_mt);
+		cv::imshow("camera_trans",camera_mt);
 
 		hardFlag = 0;
 		char k = cv::waitKey(30);
